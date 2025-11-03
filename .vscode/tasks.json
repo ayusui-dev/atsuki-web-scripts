@@ -1,0 +1,36 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+  
+    {
+      "label": "ビルド",
+      "type": "shell",
+      "command": "npm run build:release",
+      "group": "build",
+      "problemMatcher": [],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      }
+    },
+    {
+      "label": "難読化",
+      "type": "shell",
+      "command": "npm run obfuscate",
+      "group": "build",
+      "problemMatcher": [],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      }
+    },
+    {
+      "label": "サーバ起動＋ブラウザ起動",
+      "type": "shell",
+      "command": "npm run serve",
+      "group": "test",
+      "problemMatcher": [],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      }
+    }
+  ]
+}

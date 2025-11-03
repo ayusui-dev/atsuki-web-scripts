@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "target": "ES6",
+    "module": "ES6",
+    "outDir": "../atsuki-web-system/site/js",
+    "strict": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "baseUrl": ".",
+    "paths": {
+      "@compFW/*":["../ayusui-devbase/modules/base/*"]
+    }
+  },
+  "include": ["modules/**/*.ts", "../ayusui-devbase/modules/base/**/*.ts"]
+}
