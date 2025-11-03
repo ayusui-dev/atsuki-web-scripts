@@ -12,5 +12,5 @@
       "@compFW/*":["../ayusui-devbase/modules/base/*"]
     }
   },
-  "include": ["modules/**/*.ts", "../ayusui-devbase/modules/base/**/*.ts"]
+  "include": ["build-module/**/*.ts", "../ayusui-devbase/modules/base/**/*.ts", "build-module/**/*.ts"]
 }

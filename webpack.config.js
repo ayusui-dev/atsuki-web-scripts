@@ -3,7 +3,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = {
   entry: {
-    indexScript: './modules/releaseScripts/index_scripts'
+    sample: './build-module/sample_scripts.ts'
   },
   output: {
     filename: '[name].js', // A.js, B.js に出力
