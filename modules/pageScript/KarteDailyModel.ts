@@ -33,6 +33,15 @@ export class KarteDailyModel extends AbstractDbModel {
         Object.assign(this, init);
     }
 
+    public cloneModel(): KarteDailyModel {
+        let model:KarteDailyModel = new KarteDailyModel();
+        model.standardId = this.standardId;
+        model.memoId = this.memoId;
+        model.memoStr = this.memoStr;
+        model.photo = this.photo;
+        model.treatmentDate = this.treatmentDate;
+        return model;
+    }
 }
 
 export enum MEMO_ID {
@@ -71,7 +80,7 @@ export class MemoIdManager {
 
     public static convertMemoId(id: string): MEMO_ID {
         let str = MemoIdManager.getDisplayValue(id);
-        if(str != ""){
+        if (str != "") {
             return id as MEMO_ID;
         } else {
             return MEMO_ID.UNKNOWN;

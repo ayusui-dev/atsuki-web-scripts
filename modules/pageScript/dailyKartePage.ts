@@ -11,7 +11,6 @@ import { SIZE_UNIT } from "@compFW/components/Component";
 import { StyleUtil } from "./StyleScripts";
 import { Dimension, Objects } from "@compFW/javalike/javalang";
 import { Button, Label } from "@compFW/components/ReadOnlyCompoents";
-import { add } from "lodash";
 
 export class dailyKartePage extends AbstractContetntsAdapter<BoxLayoutPanel> {
     private dbMan: AtsukiDbManager<KarteStdModel> = new AtsukiDbManager<KarteStdModel>(new SearchParentProcesses(this));
@@ -61,12 +60,13 @@ export class SearchParentProcesses extends DbManagerProcessWrapper<KarteStdModel
     private pageObj: dailyKartePage;
     private inputDataMap: Map<number, Array<DailyEntryItems>>;
     private dailyDbMan: AtsukiDbManager<KarteDailyModel>;
+    private dailyDbProc: SearchDetailProcess = new SearchDetailProcess();
 
     constructor(pageObj: dailyKartePage) {
         super();
         this.pageObj = pageObj;
         this.inputDataMap = new Map<number, Array<DailyEntryItems>>();
-        this.dailyDbMan = new AtsukiDbManager<KarteDailyModel>(new SearchDetailProcess());
+        this.dailyDbMan = new AtsukiDbManager<KarteDailyModel>(this.dailyDbProc);
         this.dailyDbMan.dbOpen();
     }
 
@@ -90,11 +90,12 @@ export class SearchParentProcesses extends DbManagerProcessWrapper<KarteStdModel
             let inputAreaPanel: Panel = new BoxLayoutPanel();
             inputAreaPanel.setComponentMargin(0, 5, 0, 0);
             itemBox.addComponents(addButton, inputAreaPanel, entryBttuon);
+            itemBox.getCssObject().overflowY = "auto";
 
             // 施術追加ボタン
             addButton.addClickEventListener(e => {
 
-                let baseInArea:FlowLayoutPanel = new FlowLayoutPanel();
+                let baseInArea: FlowLayoutPanel = new FlowLayoutPanel();
                 baseInArea.setComponentPadding(8, 8, 12, 12);
                 let ddl: DropDownList = DailyEntryItems.createMemoIdDropDown();
                 let photoCtl: CameraShotField = new CameraShotField();
@@ -107,6 +108,7 @@ export class SearchParentProcesses extends DbManagerProcessWrapper<KarteStdModel
 
                 inputAreaPanel.addComponents(baseInArea, memoLabel, memoStr);
                 let entryItem: DailyEntryItems = new DailyEntryItems();
+                entryItem.standardId = v.id;
                 entryItem.memoIdCtl = ddl;
                 entryItem.memoStrCtl = memoStr;
                 entryItem.photoCtl = photoCtl;
@@ -117,7 +119,22 @@ export class SearchParentProcesses extends DbManagerProcessWrapper<KarteStdModel
             });
 
             entryBttuon.addClickEventListener(e => {
+                let data: DailyEntryItems[] | undefined = this.inputDataMap.get(v.id);
                 
+
+                if (Objects.null(data) || data.length == 0) {
+                    // 未入力の場合はエラー
+                    alert("施術情報を入力してください");
+                    return;
+                }
+
+                this.dailyDbProc.clearCount();
+                this.dailyDbProc.userName = v.userName;
+                this.dailyDbProc.entryCount = data.length;
+
+                data.forEach(v => {
+                    this.dailyDbMan.ExecuteEntry(v.createDbData());
+                });
             });
 
 
@@ -139,7 +156,7 @@ export class DailyEntryItems extends KarteDailyModel {
 
     photoCtl!: CameraShotField;
 
-    public applyValues(): void {
+    public createDbData(): KarteDailyModel {
         this.treatmentDate = new Date();
 
         if (Objects.notNull(this.memoIdCtl)) {
@@ -157,6 +174,7 @@ export class DailyEntryItems extends KarteDailyModel {
             this.photo = this.photoCtl.getFirstFile();
         }
 
+        return this.cloneModel();
     }
 
     public static createMemoIdDropDown(): DropDownList {
@@ -170,13 +188,24 @@ export class DailyEntryItems extends KarteDailyModel {
 }
 
 export class SearchDetailProcess extends DbManagerProcessWrapper<KarteDailyModel> {
-    userName?: string;
+    userName!: string;
+
+    entryCount!: number;
+
+    private nowCount: number = 0;
+
+    public clearCount(): void {
+        this.nowCount = 0;
+    }
 
     public dbEntryAfterProcess(dbMan: DbManager<KarteDailyModel>): void {
-        alert("施術情報を記録しました。 患者名：" + this.userName);
+        if(++this.nowCount === this.entryCount){
+            alert("施術情報を記録しました。 患者名：" + this.userName);
+        }
     }
 
     public dbEntryErrorProcess(dbMan: DbManager<KarteDailyModel>, ex: DOMException | null): void {
         alert("施術情報記録中にエラーが発生しました。" + ex?.message);
+        throw ex;
     }
 }
