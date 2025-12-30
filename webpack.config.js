@@ -1,13 +1,14 @@
+const tscon = require('./tsconfig.json');
 const path = require('path');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = {
   entry: {
-    sample: './build-module/sample_scripts.ts'
+    index: './build-module/index_scripts.ts'
   },
   output: {
     filename: '[name].js', // A.js, B.js に出力
-    path: path.resolve(__dirname, '../atsuki-web-system/site/js')
+    path: path.resolve(__dirname, tscon.compilerOptions.outDir)
   },
   module: {
     rules: [

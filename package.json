@@ -2,18 +2,11 @@
   "name": "atsuki-web-project",
   "version": "1.0.0",
   "scripts": {
-    "build:debug": "tsc --project ./tsconfig.json",
-    "build:release": "webpack --config webpack.config.js",
-    "copy:json": "shx cp atsuki-web-scripts/config/db-config.json atsuki-web-system/site/config/db-config.json",
     "obfuscate": "powershell -Command \"Get-ChildItem ../atsuki-web-system/site/js -Recurse -Filter *.js | ForEach-Object { uglifyjs $_.FullName -o $_.FullName --compress --mangle }\"",
     "serve": "node ../atsuki-web-system/server.js",
-    "open": "start http://localhost:3000"
-  },
-  "devDependencies": {
-    "ts-loader": "^9.5.0",
-    "typescript": "^5.2.2",
-    "uglify-js": "^3.17.4",
-    "webpack": "^5.88.2",
-    "webpack-cli": "^5.1.4"
+    "open": "start http://localhost:3000",
+    "buildJs":"webpack --config webpack.config.js",
+    "generate-html": "ts-node --project ./tsconfig.json -r tsconfig-paths/register ./build-module/outputHtmls.ts",
+    "build:release": "npm run buildJs && npm run generate-html"
   }
 }
